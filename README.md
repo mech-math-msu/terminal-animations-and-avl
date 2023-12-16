@@ -6,13 +6,14 @@
 
 ## Structure
 
-AVL implementation is in file `avl.h`,
-In `main.cpp` you could find tests and implementation of `animated_sprite` and `screen` for sprites classes.
+- `avl.h` -- AVL tree implementation
+- `main.cpp` -- implementation of `animated_sprite` and `screen` for sprites classes.
+- `avl_test.cpp` -- tests for AVL tree. 
 
 ## How to run
 
 1. `git clone ....git`
 2. `g++ main.cpp -o prog`
-3. `./prog`
+3. `./prog --help`
 
 

@@ -2,9 +2,6 @@
 #include <algorithm>
 #include <fstream>
 #include <cstdlib>
-#define FMT_HEADER_ONLY
-#include "fmt/color.h"
-#include "fmt/ranges.h"
 
 const int BALANCED = 0, LEFT_HEAVY = -1, RIGHT_HEAVY = 1;
 
@@ -237,18 +234,6 @@ private:
             print_subtree(out, root->left, prefix + (is_left ? "│   " : "    "), false);
         }
     }
-    // void print_subtree_colorized(node* root, std::string prefix, bool is_left, int& depth, int height) const {
-    //     if (root != nullptr) {
-    //         fmt::print(prefix);
-    //         fmt::print("{tre}")
-    //         out << (is_left ? "├── " : "└── " );
-
-    //         out << root->key << " " << root->balance_factor << "\n";
-
-    //         print_subtree(out, root->right, prefix + (is_left ? "│   " : "    "), true);
-    //         print_subtree(out, root->left, prefix + (is_left ? "│   " : "    "), false);
-    //     }
-    // }
     node* smallest(node* root) const {
         if (root == nullptr) {
             return nullptr;
@@ -352,6 +337,7 @@ public:
         }
     }
     AVL<KeyType, ValueType>& operator=(const AVL<KeyType, ValueType>& other) {
+        if (this == &other) { return *this; }
         destroy(root);
         for (auto it = other.begin(); it != other.end(); ++it) {
             pair p = *it;
@@ -359,11 +345,23 @@ public:
         }
         return *this;
     }
+    void destroy() {
+        destroy(root);
+    }
     struct pair {
-        KeyType key;
-        ValueType value;
-        pair(KeyType key, ValueType value): key(key), value(value) { }
+        const KeyType key;
+        ValueType& value;
+        pair(const KeyType& key, ValueType& value): key(key), value(value) { }
         friend std::ostream& operator<<(std::ostream& out, const pair& p) {
+            std::cout << p.key << " " << p.value;
+            return out;
+        }
+    };
+    struct const_pair {
+        const KeyType& key;
+        const ValueType& value;
+        const_pair(const KeyType& key, const ValueType& value): key(key), value(value) { }
+        friend std::ostream& operator<<(std::ostream& out, const const_pair& p) {
             std::cout << p.key << " " << p.value;
             return out;
         }
@@ -381,8 +379,11 @@ public:
                 st.push(st.peek()->left);
             }
         }
-        pair operator*() const {
+        pair operator*() {
             return pair(st.peek()->key, st.peek()->value);
+        }
+        const_pair operator*() const {
+            return const_pair(st.peek()->key, st.peek()->value);
         }
         iterator& operator++() {
             if (st.peek()->right) {
@@ -417,6 +418,12 @@ public:
             return !(other == *this);
         }
     };
+    iterator begin() {
+        return iterator(root);
+    }
+    iterator end() {
+        return iterator(nullptr);
+    }
     iterator begin() const {
         return iterator(root);
     }
